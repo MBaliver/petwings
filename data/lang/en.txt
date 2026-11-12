@@ -1,0 +1,59 @@
+# PetWings source port - English text table
+#
+# Format: KEY=text   (one entry per line, '#' starts a comment)
+# Wrap the text in double quotes to keep leading/trailing spaces.
+#
+# To add a language, copy this file to data/lang/<code>.txt (e.g. pt.txt) and translate the
+# values. Missing keys fall back to English. Images can be replaced per language by placing
+# 8-bit BMPs that use the game's palette in data/lang/<code>/gfx/ with the same file name as
+# in data/gfx/ (e.g. 139.bmp for "POWER UP"), or menu_options.bmp for the OPTIONS menu entry.
+#
+# The game fonts only have A-Z, 0-9, '-', '.', ':' and space; other characters are skipped.
+
+LANGUAGE_NAME=ENGLISH
+
+# ---- original game texts (kept identical to the Windows release)
+TITLE_COPYRIGHT=COPYRIGHT 1999-2009 SAITO GAMES
+CONTINUE_COST=It costs 50 potions to continue.
+NAME_ENTRY_PROMPT="Enter Your Name  "
+
+# ---- options screen
+OPT_SCALE=SCALE
+OPT_FILTER=FILTER
+OPT_ASPECT=ASPECT RATIO
+OPT_WIDESCREEN=WIDESCREEN
+OPT_FULLSCREEN=FULLSCREEN
+OPT_MUSIC=MUSIC VOLUME
+OPT_SFX=SOUND VOLUME
+OPT_LANGUAGE=LANGUAGE
+OPT_BACK=BACK
+OPTIONS_HINT=LEFT RIGHT CHANGE   ESC BACK
+
+VAL_SCALE_INTEGER=INTEGER
+VAL_SCALE_FIT=FIT
+VAL_SCALE_STRETCH=STRETCH
+VAL_FILTER_NEAREST=NEAREST
+VAL_FILTER_LINEAR=LINEAR
+VAL_ASPECT_4_3=4:3
+VAL_ASPECT_16_9=16:9
+VAL_ASPECT_21_9=21:9
+VAL_WIDE_EXPANDED=EXPANDED
+VAL_WIDE_BORDERS=BORDERS
+VAL_ON=ON
+VAL_OFF=OFF
+
+# ---- name entry with a gamepad (shown under the name box)
+NAME_PAD_HINT=UP DOWN LETTER  A ADD  B DELETE  START OK
+
+# ---- ranking screen: where the table comes from (web build)
+RANKING_SHARED=SHARED RANKING
+RANKING_OFFLINE=OFFLINE - LOCAL SCORES
+
+# ---- on-screen messages for the hotkeys (F5-F8 video, - and = volume)
+OSD_SCALE=SCALE
+OSD_FILTER=FILTER
+OSD_ASPECT=ASPECT
+OSD_WIDESCREEN=WIDESCREEN
+OSD_NEXT_SCREEN=FROM NEXT SCREEN
+OSD_MUSIC=MUSIC VOLUME
+OSD_SFX=SOUND VOLUME

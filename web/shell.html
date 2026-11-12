@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#6a3bc9">
+<title>PetWings</title>
+<meta name="description" content="PetWings, o shooter arcade de 1999 da Saito Games, direto no navegador. Teclado, controle ou toque, com ranking compartilhado.">
+<!-- link previews (Discord, WhatsApp, Telegram, ...) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PetWings">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="PetWings">
+<meta property="og:description" content="O shooter arcade de 1999 da Saito Games, direto no navegador. Teclado, controle ou toque, com ranking compartilhado.">
+<meta property="og:url" content="@PETWINGS_PUBLIC_URL@/">
+<meta property="og:image" content="@PETWINGS_PUBLIC_URL@/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Logo do PetWings com asas douradas e o pet voando">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="PetWings">
+<meta name="twitter:description" content="O shooter arcade de 1999 da Saito Games, direto no navegador.">
+<meta name="twitter:image" content="@PETWINGS_PUBLIC_URL@/og-image.png">
+<link rel="icon" type="image/png" href="icon-32.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden;
+               overscroll-behavior: none; touch-action: none; -webkit-user-select: none; user-select: none; }
+  #canvas { position: fixed; inset: 0; width: 100vw !important; height: 100vh !important;
+            height: 100dvh !important; display: block; outline: none; }
+  #start { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center;
+           justify-content: center; gap: 18px; color: #fff; font: 600 18px/1.4 system-ui, sans-serif;
+           background: radial-gradient(circle at 50% 40%, #2a4b8f 0%, #0b1020 70%); cursor: pointer; z-index: 2; }
+  #start h1 { margin: 0; font-size: 44px; letter-spacing: 1px;
+              background: linear-gradient(90deg, #39b6c8, #6a3bc9, #e8459b); -webkit-background-clip: text;
+              background-clip: text; color: transparent; }
+  #start .btn { padding: 14px 34px; border-radius: 999px; background: #ffd34d; color: #2a1b00; font-size: 20px; }
+  #start .hint { opacity: .75; font-weight: 400; font-size: 14px; text-align: center; max-width: 420px; padding: 0 16px; }
+  #status { opacity: .8; font-weight: 400; font-size: 14px; }
+  #fs { position: fixed; left: 10px; top: 10px; z-index: 3; width: 40px; height: 40px; border-radius: 50%;
+        border: 0; background: rgba(255,255,255,.18); color: #fff; font-size: 20px; display: none; }
+</style>
+</head>
+<body>
+<canvas id="canvas" tabindex="-1" oncontextmenu="event.preventDefault()"></canvas>
+<button id="fs" title="Fullscreen">&#x26F6;</button>
+<div id="start">
+  <h1>PetWings</h1>
+  <div class="btn" id="play">&#9654; Play</div>
+  <div id="status">Loading&hellip;</div>
+  <div class="hint">Keyboard: arrows move, Space/Ctrl fire, Enter select, P pause, Esc back to title.<br>
+    Gamepad and touch screen supported.</div>
+</div>
+<script>
+  var ready = false, started = false;
+  var startEl = document.getElementById('start'), statusEl = document.getElementById('status');
+  var Module = {
+    canvas: document.getElementById('canvas'),
+    setStatus: function (t) { if (!started) statusEl.textContent = t || (ready ? 'Ready' : 'Loading…'); },
+    onRuntimeInitialized: function () {
+      ready = true; statusEl.textContent = 'Ready';
+      if (new URLSearchParams(location.search).has('autostart')) start(null);  // automated tests
+    },
+    print: function (t) { console.log(t); },
+    printErr: function (t) { console.warn(t); }
+  };
+  function goFullscreen() {
+    var el = document.documentElement;
+    var req = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (req) {
+      try {
+        var p = req.call(el);
+        if (p && p.then) p.then(function () {
+          if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(function(){});
+        }).catch(function(){});
+      } catch (e) {}
+    }
+  }
+  function start(ev) {
+    if (!ready || started) return;
+    started = true;
+    var touch = ev && (ev.pointerType === 'touch' || ev.type === 'touchend');
+    if (touch) goFullscreen();
+    startEl.style.display = 'none';
+    document.getElementById('fs').style.display = 'block';
+    Module.canvas.focus();
+    // URL parameters become command-line options, e.g. index.html?aspect=16:9&widescreen=borders
+    var args = [];
+    new URLSearchParams(location.search).forEach(function (v, k) { if (k !== 'autostart') args.push('--' + k + (v ? '=' + v : '')); });
+    Module.callMain(args);  // inside the user gesture so audio is allowed to start
+  }
+  startEl.addEventListener('pointerup', start);
+  window.addEventListener('keydown', function (e) {
+    if (!started && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); start(e); }
+  });
+  document.getElementById('fs').addEventListener('click', function (e) {
+    e.stopPropagation();
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    } else goFullscreen();
+    Module.canvas.focus();
+  });
+  ['touchstart', 'touchmove'].forEach(function (t) {
+    document.addEventListener(t, function (e) { if (started) e.preventDefault(); }, { passive: false });
+  });
+</script>
+{{{ SCRIPT }}}
+</body>
+</html>
